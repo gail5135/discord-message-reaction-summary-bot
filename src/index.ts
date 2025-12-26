@@ -7,6 +7,10 @@ import {
 } from "discord.js";
 import "dotenv/config";
 
+/* =========================
+   Discord Client
+========================= */
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -17,56 +21,98 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
-// 원본 메시지 ID → 카피 메시지 ID
-const copyMessageMap = new Map<string, string>();
+/* =========================
+   Environment
+========================= */
 
-const COPY_TARGET_CHANNEL_ID = process.env.COPY_TARGET_CHANNEL_ID!;
+const COPY_TARGET_CHANNEL_ID = process.env.COPY_TARGET_CHANNEL_ID;
 if (!COPY_TARGET_CHANNEL_ID) {
   throw new Error("COPY_TARGET_CHANNEL_ID is required");
 }
 
-// 로그인 확인
-client.once("ready", () => {
-  console.log(`Logged in as ${client.user?.tag}`);
-});
+/* =========================
+   In-memory Map
+   원본 메시지 ID → 카피 메시지 ID
+========================= */
 
-/**
- * 카피 메시지 생성
- */
+const copyMessageMap = new Map<string, string>();
+
+/* =========================
+   i18n (Lightweight)
+========================= */
+
+type Locale = "ko" | "ja";
+
+const LABELS: Record<Locale, { organizer: string; content: string }> = {
+  ko: {
+    organizer: "모집자",
+    content: "모집 내용",
+  },
+  ja: {
+    organizer: "主催者",
+    content: "募集説明",
+  },
+};
+
+function getLocale(message: Message): Locale {
+  const locale = message.guild?.preferredLocale;
+  if (locale?.startsWith("ja")) return "ja";
+  return "ko";
+}
+
+/* =========================
+   Utils
+========================= */
+
+function buildBaseContent(original: Message): string {
+  const locale = getLocale(original);
+  const labels = LABELS[locale];
+
+  return (
+    `"${labels.organizer}": <@${original.author.id}>\n` +
+    `"${labels.content}": ${original.content}`
+  );
+}
+
+/* =========================
+   Create Copy Message
+========================= */
+
 async function createCopyMessage(original: Message): Promise<Message> {
-  const channel = await client.channels.fetch(COPY_TARGET_CHANNEL_ID);
+  const channel = await client.channels.fetch(COPY_TARGET_CHANNEL_ID as string);
 
   if (!channel || !channel.isTextBased()) {
     throw new Error("Copy target channel is not a text channel");
   }
 
   const textChannel = channel as TextChannel;
+  const baseContent = buildBaseContent(original);
 
-  const copy = await textChannel.send(original.content || "(내용 없음)");
-  copyMessageMap.set(original.id, copy.id);
+  const copyMessage = await textChannel.send(baseContent);
+  copyMessageMap.set(original.id, copyMessage.id);
 
-  return copy;
+  return copyMessage;
 }
 
-/**
- * 카피 메시지 내용 업데이트 (리액션 요약)
- */
+/* =========================
+   Update Reaction Summary
+========================= */
+
 async function updateCopyMessage(copyMessage: Message) {
   const reactions = copyMessage.reactions.cache;
-
   const lines: string[] = [];
 
   for (const reaction of reactions.values()) {
     const users = await reaction.users.fetch();
-    const filtered = users.filter((u) => !u.bot);
+    const filteredUsers = users.filter((u) => !u.bot);
 
-    if (filtered.size === 0) continue;
+    if (filteredUsers.size === 0) continue;
 
     const emojiDisplay = reaction.emoji.id
       ? `<:${reaction.emoji.name}:${reaction.emoji.id}>`
       : reaction.emoji.name;
 
-    const mentions = filtered.map((u) => `<@${u.id}>`).join(", ");
+    const mentions = filteredUsers.map((u) => `<@${u.id}>`).join(", ");
 
     lines.push(`${emojiDisplay} : ${mentions}`);
   }
@@ -81,14 +127,19 @@ async function updateCopyMessage(copyMessage: Message) {
   await copyMessage.edit(finalContent);
 }
 
-/**
- * 원본 메시지 감지 → 카피 생성
- */
+/* =========================
+   Events
+========================= */
+
+// Bot ready
+client.once("ready", () => {
+  console.log(`Logged in as ${client.user?.tag}`);
+});
+
+// Original message → create copy
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
-
-  // 이미 카피된 메시지는 무시
   if (copyMessageMap.has(message.id)) return;
 
   try {
@@ -98,9 +149,7 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-/**
- * 리액션 추가
- */
+// Reaction add
 client.on("messageReactionAdd", async (reaction, user) => {
   if (user.bot) return;
 
@@ -108,15 +157,12 @@ client.on("messageReactionAdd", async (reaction, user) => {
     ? await reaction.message.fetch()
     : reaction.message;
 
-  // 카피 메시지에만 반응
   if (![...copyMessageMap.values()].includes(message.id)) return;
 
   await updateCopyMessage(message);
 });
 
-/**
- * 리액션 제거
- */
+// Reaction remove
 client.on("messageReactionRemove", async (reaction, user) => {
   if (user.bot) return;
 
@@ -128,5 +174,9 @@ client.on("messageReactionRemove", async (reaction, user) => {
 
   await updateCopyMessage(message);
 });
+
+/* =========================
+   Login
+========================= */
 
 client.login(process.env.DISCORD_TOKEN);
