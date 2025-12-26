@@ -1,15 +1,11 @@
-export const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-export const ORIGIN_CHANNEL_ID = process.env.ORIGIN_CHANNEL_ID;
-export const COPY_TARGET_CHANNEL_ID = process.env.COPY_TARGET_CHANNEL_ID;
+const requireEnv = (key: string): string => {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`${key} is required`);
+  }
+  return value;
+};
 
-if (!DISCORD_TOKEN) {
-  throw new Error("DISCORD_TOKEN is required");
-}
-
-if (!ORIGIN_CHANNEL_ID) {
-  throw new Error("ORIGIN_CHANNEL_ID is required");
-}
-
-if (!COPY_TARGET_CHANNEL_ID) {
-  throw new Error("COPY_TARGET_CHANNEL_ID is required");
-}
+export const DISCORD_TOKEN = requireEnv("DISCORD_TOKEN");
+export const ORIGIN_CHANNEL_ID = requireEnv("ORIGIN_CHANNEL_ID");
+export const COPY_TARGET_CHANNEL_ID = requireEnv("COPY_TARGET_CHANNEL_ID");
