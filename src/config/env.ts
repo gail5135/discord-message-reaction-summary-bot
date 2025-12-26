@@ -6,6 +6,10 @@ if (!DISCORD_TOKEN) {
   throw new Error("DISCORD_TOKEN is required");
 }
 
+if (!ORIGIN_CHANNEL_ID) {
+  throw new Error("ORIGIN_CHANNEL_ID is required");
+}
+
 if (!COPY_TARGET_CHANNEL_ID) {
   throw new Error("COPY_TARGET_CHANNEL_ID is required");
 }
