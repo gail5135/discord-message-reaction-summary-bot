@@ -1,17 +1,9 @@
 import { Client, Message, TextChannel } from "discord.js";
 import { COPY_TARGET_CHANNEL_ID } from "../config/env";
-import { LABELS } from "../config/i18n";
-import { getLocale } from "../utils/locale";
 import { copyMessageMap } from "../store/messageMap";
 
 function buildBaseContent(original: Message): string {
-  const locale = getLocale(original);
-  const labels = LABELS[locale];
-
-  return (
-    `"${labels.organizer}": <@${original.author.id}>\n` +
-    `"${labels.content}": ${original.content}`
-  );
+  return `**From** <@${original.author.id}>\n\n${original.content}`;
 }
 
 export async function createCopyMessage(

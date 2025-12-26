@@ -16,10 +16,12 @@ export async function updateCopyMessage(copyMessage: Message) {
     lines.push(`${emoji} : ${mentions}`);
   }
 
-  const base = copyMessage.content.split("-----------")[0].trim();
+  const base = copyMessage.content.split("----------------------")[0].trim();
 
   const final =
-    lines.length === 0 ? base : `${base}\n-----------\n${lines.join("\n")}`;
+    lines.length === 0
+      ? base
+      : `${base}\n\n----------------------\n${lines.join("\n")}`;
 
   await copyMessage.edit(final);
 }
