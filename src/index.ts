@@ -1,7 +1,7 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
 import "dotenv/config";
+import { Client, GatewayIntentBits, Partials } from "discord.js";
 
-import { DISCORD_TOKEN } from "./config/env";
+import { DISCORD_TOKEN, ORIGIN_CHANNEL_ID } from "./config/env";
 import { copyMessageMap } from "./store/messageMap";
 import { createCopyMessage } from "./services/copyService";
 import { updateCopyMessage } from "./services/reactionService";
@@ -24,6 +24,7 @@ client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
   if (copyMessageMap.has(message.id)) return;
+  if (message.channel.id !== ORIGIN_CHANNEL_ID) return;
 
   await createCopyMessage(client, message);
 });
