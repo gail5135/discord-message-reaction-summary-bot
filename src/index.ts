@@ -31,13 +31,20 @@ client.once("ready", () => {
 
 /**
  * 새 메시지 생성 이벤트
- * 원본 채널의 메시지를 타겟 채널로 복사
+ * @everyone으로 시작하고 내용이 있는 메시지만 타겟 채널로 복사
  */
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
   if (hasOriginal(message.id)) return;
   if (message.channel.id !== ORIGIN_CHANNEL_ID) return;
+
+  // @everyone으로 시작하지 않으면 무시
+  if (!message.content.startsWith("@everyone")) return;
+
+  // @everyone 뒤에 내용이 없으면 무시
+  const contentAfterTag = message.content.slice("@everyone".length).trim();
+  if (!contentAfterTag) return;
 
   await createCopyMessage(client, message);
 });
