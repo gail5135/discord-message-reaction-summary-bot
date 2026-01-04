@@ -34,7 +34,7 @@ const SEPARATOR = "----------------------";
 export function createEditButton(): ActionRowBuilder<ButtonBuilder> {
   const button = new ButtonBuilder()
     .setCustomId(BUTTON_ID.EDIT)
-    .setLabel("수정")
+    .setLabel("編集")
     .setStyle(ButtonStyle.Secondary)
     .setEmoji("✏️");
 
@@ -70,7 +70,7 @@ export async function handleEditButton(
   // 복사 메시지인지 확인
   if (!isCopyMessage(message.id)) {
     await interaction.reply({
-      content: "이 메시지는 수정할 수 없습니다.",
+      content: "このメッセージは編集できません。",
       ephemeral: true,
     });
     return;
@@ -80,7 +80,7 @@ export async function handleEditButton(
   const authorId = extractAuthorId(message.content);
   if (authorId !== interaction.user.id) {
     await interaction.reply({
-      content: "본인이 작성한 메시지만 수정할 수 있습니다.",
+      content: "本人が作成したメッセージのみ編集できます。",
       ephemeral: true,
     });
     return;
@@ -98,7 +98,7 @@ export async function handleEditButton(
     .setCustomId(MODAL_ID.CONTENT_INPUT)
     .setLabel("新しい内容")
     .setStyle(TextInputStyle.Paragraph)
-    .setPlaceholder("修正する内容を入力してください")
+    .setPlaceholder("編集する内容を入力してください")
     .setValue(currentContent)
     .setRequired(true)
     .setMaxLength(2000);
@@ -129,7 +129,7 @@ export async function handleEditModalSubmit(
   const authorId = extractAuthorId(message.content);
   if (authorId !== interaction.user.id) {
     await interaction.reply({
-      content: "本人が作成したメッセージのみ修正できます。",
+      content: "本人が作成したメッセージのみ編集できます。",
       ephemeral: true,
     });
     return;
@@ -171,7 +171,7 @@ export async function handleEditModalSubmit(
   });
 
   await interaction.reply({
-    content: "メッセージを修正しました。",
+    content: "メッセージを編集しました。",
     ephemeral: true,
   });
 }
