@@ -14,8 +14,5 @@ const requireEnv = (key: string): string => {
 /** Discord 봇 토큰 */
 export const DISCORD_TOKEN = requireEnv("DISCORD_TOKEN");
 
-/** 원본 메시지를 감지할 채널 ID */
-export const ORIGIN_CHANNEL_ID = requireEnv("ORIGIN_CHANNEL_ID");
-
-/** 복사 메시지를 작성할 채널 ID */
-export const COPY_TARGET_CHANNEL_ID = requireEnv("COPY_TARGET_CHANNEL_ID");
+/** 원본 메시지 있고 복사 메시지가 작성될 채널 ID */
+export const TARGET_CHANNEL_ID = requireEnv("TARGET_CHANNEL_ID");

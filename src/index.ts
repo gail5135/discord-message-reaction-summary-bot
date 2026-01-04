@@ -2,24 +2,17 @@
  * Discord 메시지 리액션 요약 봇
  *
  * 기능:
- * 1. 원본 채널에 메시지 작성 시 → 타겟 채널에 복사
- * 2. 원본/복사 메시지에 리액션 추가/제거 시 → 복사 메시지에 리액션 정보 기록
- * 3. 양쪽 메시지의 리액션을 합산하여 중복 없이 기록
+ * 1. @everyone 메시지 작성 시 → 타겟 채널에 복사 후 원본 삭제
+ * 2. 복사 메시지에 리액션 추가/제거 시 → 리액션 정보 기록
+ * 3. 복사 메시지 수정 버튼으로 내용 수정 가능
  */
 
 import "dotenv/config";
 import { Client, GatewayIntentBits, Message, Partials } from "discord.js";
 
-import { DISCORD_TOKEN, ORIGIN_CHANNEL_ID } from "./config/env";
-import {
-  hasOriginal,
-  isOriginalMessage,
-  isTrackedMessage,
-} from "./store/messageMap";
-import {
-  createCopyMessage,
-  updateCopyMessageContent,
-} from "./services/copyService";
+import { DISCORD_TOKEN } from "./config/env";
+import { isCopyMessage } from "./store/messageMap";
+import { createCopyMessage } from "./services/copyService";
 import { handleReactionChange } from "./services/reactionService";
 import {
   BUTTON_ID,
@@ -49,8 +42,6 @@ client.once("ready", () => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
-  if (hasOriginal(message.id)) return;
-  if (message.channel.id !== ORIGIN_CHANNEL_ID) return;
 
   // @everyone으로 시작하지 않으면 무시
   if (!message.content.startsWith("@everyone")) return;
@@ -76,7 +67,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
   if (user.bot) return;
 
   const message = await fetchFullMessage(reaction.message as Message);
-  if (!isTrackedMessage(message.id)) return;
+  if (!isCopyMessage(message.id)) return;
 
   await handleReactionChange(message);
 });
@@ -88,22 +79,9 @@ client.on("messageReactionRemove", async (reaction, user) => {
   if (user.bot) return;
 
   const message = await fetchFullMessage(reaction.message as Message);
-  if (!isTrackedMessage(message.id)) return;
+  if (!isCopyMessage(message.id)) return;
 
   await handleReactionChange(message);
-});
-
-/**
- * 메시지 수정 이벤트
- * 원본 메시지 수정 시 복사본도 동기화
- */
-client.on("messageUpdate", async (oldMessage, newMessage) => {
-  const message = await fetchFullMessage(newMessage as Message);
-
-  if (message.author.bot) return;
-  if (!isOriginalMessage(message.id)) return;
-
-  await updateCopyMessageContent(client, message);
 });
 
 /**

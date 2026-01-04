@@ -13,7 +13,7 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from "discord.js";
-import { getOriginalId, isCopyMessage } from "../store/messageMap";
+import { isCopyMessage } from "../store/messageMap";
 
 /** 버튼/모달 ID 상수 */
 export const BUTTON_ID = {
