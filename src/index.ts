@@ -1,10 +1,10 @@
 import "dotenv/config";
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, GatewayIntentBits, Message, Partials } from "discord.js";
 
 import { DISCORD_TOKEN, ORIGIN_CHANNEL_ID } from "./config/env";
-import { copyMessageMap } from "./store/messageMap";
+import { hasOriginal, isTrackedMessage } from "./store/messageMap";
 import { createCopyMessage } from "./services/copyService";
-import { updateCopyMessage } from "./services/reactionService";
+import { handleReactionChange } from "./services/reactionService";
 
 const client = new Client({
   intents: [
@@ -23,32 +23,32 @@ client.once("ready", () => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
-  if (copyMessageMap.has(message.id)) return;
+  if (hasOriginal(message.id)) return;
   if (message.channel.id !== ORIGIN_CHANNEL_ID) return;
 
   await createCopyMessage(client, message);
 });
 
+async function fetchFullMessage(message: Message): Promise<Message> {
+  return message.partial ? await message.fetch() : message;
+}
+
 client.on("messageReactionAdd", async (reaction, user) => {
   if (user.bot) return;
 
-  const message = reaction.message.partial
-    ? await reaction.message.fetch()
-    : reaction.message;
+  const message = await fetchFullMessage(reaction.message as Message);
+  if (!isTrackedMessage(message.id)) return;
 
-  if (![...copyMessageMap.values()].includes(message.id)) return;
-  await updateCopyMessage(message);
+  await handleReactionChange(message);
 });
 
 client.on("messageReactionRemove", async (reaction, user) => {
   if (user.bot) return;
 
-  const message = reaction.message.partial
-    ? await reaction.message.fetch()
-    : reaction.message;
+  const message = await fetchFullMessage(reaction.message as Message);
+  if (!isTrackedMessage(message.id)) return;
 
-  if (![...copyMessageMap.values()].includes(message.id)) return;
-  await updateCopyMessage(message);
+  await handleReactionChange(message);
 });
 
 client.login(DISCORD_TOKEN);
