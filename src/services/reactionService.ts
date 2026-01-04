@@ -22,9 +22,11 @@ async function collectReactions(
     const filtered = users.filter((u) => !u.bot);
     if (filtered.size === 0) continue;
 
-    // 커스텀 이모지는 <:name:id> 형식, 일반 이모지는 그대로
+    // 커스텀 이모지는 <:name:id> 또는 <a:name:id> 형식, 일반 이모지는 그대로
     const emoji = reaction.emoji.id
-      ? `<:${reaction.emoji.name}:${reaction.emoji.id}>`
+      ? `<${reaction.emoji.animated ? "a" : ""}:${reaction.emoji.name}:${
+          reaction.emoji.id
+        }>`
       : reaction.emoji.name!;
 
     const userIds = result.get(emoji) ?? new Set<string>();
