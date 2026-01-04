@@ -11,8 +11,15 @@ import "dotenv/config";
 import { Client, GatewayIntentBits, Message, Partials } from "discord.js";
 
 import { DISCORD_TOKEN, ORIGIN_CHANNEL_ID } from "./config/env";
-import { hasOriginal, isTrackedMessage } from "./store/messageMap";
-import { createCopyMessage } from "./services/copyService";
+import {
+  hasOriginal,
+  isOriginalMessage,
+  isTrackedMessage,
+} from "./store/messageMap";
+import {
+  createCopyMessage,
+  updateCopyMessageContent,
+} from "./services/copyService";
 import { handleReactionChange } from "./services/reactionService";
 
 const client = new Client({
@@ -78,6 +85,19 @@ client.on("messageReactionRemove", async (reaction, user) => {
   if (!isTrackedMessage(message.id)) return;
 
   await handleReactionChange(message);
+});
+
+/**
+ * 메시지 수정 이벤트
+ * 원본 메시지 수정 시 복사본도 동기화
+ */
+client.on("messageUpdate", async (oldMessage, newMessage) => {
+  const message = await fetchFullMessage(newMessage as Message);
+
+  if (message.author.bot) return;
+  if (!isOriginalMessage(message.id)) return;
+
+  await updateCopyMessageContent(client, message);
 });
 
 client.login(DISCORD_TOKEN);
