@@ -21,6 +21,12 @@ import {
   updateCopyMessageContent,
 } from "./services/copyService";
 import { handleReactionChange } from "./services/reactionService";
+import {
+  BUTTON_ID,
+  MODAL_ID,
+  handleEditButton,
+  handleEditModalSubmit,
+} from "./services/interactionService";
 
 const client = new Client({
   intents: [
@@ -98,6 +104,27 @@ client.on("messageUpdate", async (oldMessage, newMessage) => {
   if (!isOriginalMessage(message.id)) return;
 
   await updateCopyMessageContent(client, message);
+});
+
+/**
+ * 인터랙션 이벤트 (버튼 클릭, 모달 제출 등)
+ */
+client.on("interactionCreate", async (interaction) => {
+  // 버튼 클릭
+  if (interaction.isButton()) {
+    if (interaction.customId === BUTTON_ID.EDIT) {
+      await handleEditButton(interaction);
+    }
+    return;
+  }
+
+  // 모달 제출
+  if (interaction.isModalSubmit()) {
+    if (interaction.customId === MODAL_ID.EDIT) {
+      await handleEditModalSubmit(interaction);
+    }
+    return;
+  }
 });
 
 client.login(DISCORD_TOKEN);

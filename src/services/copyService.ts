@@ -6,6 +6,7 @@
 import { Client, Message, TextChannel } from "discord.js";
 import { COPY_TARGET_CHANNEL_ID } from "../config/env";
 import { getCopyId, setMapping } from "../store/messageMap";
+import { createEditButton } from "./interactionService";
 
 /** 메시지 내용 구분선 */
 const SEPARATOR = "----------------------";
@@ -34,7 +35,10 @@ export async function createCopyMessage(
   const textChannel = channel as TextChannel;
   const baseContent = buildBaseContent(original);
 
-  const copy = await textChannel.send(baseContent);
+  const copy = await textChannel.send({
+    content: baseContent,
+    components: [createEditButton()],
+  });
   setMapping(original.id, copy.id);
 
   return copy;
