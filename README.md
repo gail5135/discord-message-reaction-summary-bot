@@ -1,54 +1,51 @@
-# Discord Reaction Copy Bot
+# Discord Reaction Summary Bot
 
-특정 채널에 올라온 메시지를 **봇이 카피 메시지로 재작성**하고,
-그 카피 메시지에 달린 **이모지 리액션을 요약해서 메시지에 반영**해주는 Discord 봇입니다.
-
-이 봇은 **서버 전체를 감시하지 않고**,
-**지정한 채널 ID에서만 동작**하도록 설계되어 있습니다.
+`@everyone` 메시지를 **타겟 채널에 복사**하고, **리액션을 요약**해서 표시하는 Discord 봇입니다.
 
 ---
 
 ## ✨ 주요 기능
 
-- ✅ 특정 채널에서만 메시지 감지
-- ✅ 원본 메시지를 기반으로 카피 메시지 생성
-- ✅ 카피 메시지에만 리액션 허용
-- ✅ 같은 이모지에 반응한 유저를 한 줄로 묶어서 표시
-- ✅ 유저 이름 대신 **멘션(@user)** 표시
-- ✅ 서버 커스텀 이모지 및 기본 이모지 모두 지원
-- ✅ Discord 언어(한국어 / 일본어)에 따라 메시지 라벨 자동 변경
+- ✅ `@everyone`으로 시작하는 메시지만 복사
+- ✅ 복사 후 원본 메시지 자동 삭제
+- ✅ 리액션을 이모지별로 묶어서 멘션 표시
+- ✅ 커스텀 이모지 및 애니메이션 이모지 지원
+- ✅ 편집/삭제 버튼 (본인만 가능)
+- ✅ JSON 파일로 데이터 영속화 (봇 재시작 시에도 유지)
+- ✅ 일본어 UI
 
 ---
 
 ## 🧱 동작 구조
 
 ```
-[특정 채널]
-  └ 유저가 메시지 작성
+[아무 채널]
+  └ 유저가 @everyone 메시지 작성
         ↓
-  └ 봇이 카피 메시지 생성
+[타겟 채널]
+  └ 봇이 복사 메시지 생성 (편집/삭제 버튼 포함)
         ↓
-  └ 카피 메시지에 리액션 추가/제거
+  └ 원본 메시지 삭제
         ↓
-  └ 봇이 카피 메시지를 수정하여 요약 반영
+  └ 복사 메시지에 리액션 추가/제거
+        ↓
+  └ 봇이 리액션 정보를 메시지에 반영
 ```
-
-> ⚠️ 원본 메시지는 **수정하거나 삭제하지 않습니다**.
 
 ---
 
 ## 🧩 메시지 포맷 예시
 
-###
-
 ```
-From: <@주최자 ID>
+**From** @유저
 
-<내용>
+@everyone 모집합니다
 
----------------------
-😄 : @alice, @bob
+----------------------
+👍 : @alice, @bob
 🔥 : @charlie
+
+[✏️ 編集] [🗑️ 削除]
 ```
 
 ---
@@ -67,16 +64,31 @@ From: <@주최자 ID>
 
 ```env
 DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
-ORIGIN_CHANNEL_ID=123456789012345678
-COPY_TARGET_CHANNEL_ID=123456789012345678
+TARGET_CHANNEL_ID=123456789012345678
 ```
 
-- `DISCORD_TOKEN`
-  - Discord Developer Portal에서 발급한 Bot Token
-- `ORIGIN_CHANNEL_ID`
-  - **봇이 복사할 동작할 채널 ID (1개)**
-- `COPY_TARGET_CHANNEL_ID`
-  - **봇 메시지가 작성될 채널 ID (1개)**
+| 변수 | 설명 |
+|------|------|
+| `DISCORD_TOKEN` | Discord Developer Portal에서 발급한 Bot Token |
+| `TARGET_CHANNEL_ID` | 복사 메시지가 작성될 채널 ID |
+
+---
+
+## 🤖 봇 권한 설정
+
+Discord Developer Portal → OAuth2 → URL Generator에서:
+
+### Scopes
+- ✅ `bot`
+
+### Bot Permissions
+- ✅ `Send Messages`
+- ✅ `Manage Messages` (원본 삭제용)
+- ✅ `Read Message History`
+- ✅ `Add Reactions`
+
+### Privileged Gateway Intents (Bot 페이지)
+- ✅ `MESSAGE CONTENT INTENT`
 
 ---
 
@@ -95,29 +107,28 @@ Logged in as your-bot-name#1234
 
 ---
 
-## 🧠 설계 원칙
+## 📁 프로젝트 구조
 
-- 서버 단위 설정 ❌
-- 채널 단위 제어 ⭕️
-- 명시적으로 허용된 채널만 동작
-- 사고 방지를 위한 보수적 이벤트 필터링
+```
+src/
+├── config/
+│   └── env.ts              # 환경변수 로더
+├── services/
+│   ├── copyService.ts      # 메시지 복사
+│   ├── reactionService.ts  # 리액션 처리
+│   └── interactionService.ts # 버튼/모달 처리
+├── store/
+│   └── messageMap.ts       # 복사 메시지 ID 저장소
+└── index.ts                # 진입점
+```
 
 ---
 
-## 📌 향후 확장 아이디어
+## 📌 주의사항
 
-- 채널 ID 여러 개 지원
-- 채널별 언어 설정
-- 슬래시 커맨드로 ON / OFF 토글
-- OCI / VPS 배포 가이드 추가
-
----
-
-## ⚠️ 주의사항
-
-- 봇은 **다른 유저의 메시지를 수정할 수 없습니다**
-- Discord 권한상 원본 메시지는 읽기만 가능합니다
-- 카피 메시지에만 리액션을 달아주세요
+- `@everyone` 뒤에 내용이 없으면 복사되지 않음
+- 편집/삭제는 **원본 작성자 본인만** 가능
+- `data/` 폴더에 메시지 ID가 저장됨 (`.gitignore`에 포함)
 
 ---
 
