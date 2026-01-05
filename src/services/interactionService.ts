@@ -18,6 +18,7 @@ import { isCopyMessage } from "../store/messageMap";
 /** 버튼/모달 ID 상수 */
 export const BUTTON_ID = {
   EDIT: "edit_copy_message",
+  DELETE: "delete_copy_message",
 } as const;
 
 export const MODAL_ID = {
@@ -29,16 +30,25 @@ export const MODAL_ID = {
 const SEPARATOR = "----------------------";
 
 /**
- * 수정 버튼이 포함된 ActionRow 생성
+ * 편집/삭제 버튼이 포함된 ActionRow 생성
  */
-export function createEditButton(): ActionRowBuilder<ButtonBuilder> {
-  const button = new ButtonBuilder()
+export function createActionButtons(): ActionRowBuilder<ButtonBuilder> {
+  const editButton = new ButtonBuilder()
     .setCustomId(BUTTON_ID.EDIT)
     .setLabel("編集")
     .setStyle(ButtonStyle.Secondary)
     .setEmoji("✏️");
 
-  return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
+  const deleteButton = new ButtonBuilder()
+    .setCustomId(BUTTON_ID.DELETE)
+    .setLabel("削除")
+    .setStyle(ButtonStyle.Danger)
+    .setEmoji("🗑️");
+
+  return new ActionRowBuilder<ButtonBuilder>().addComponents(
+    editButton,
+    deleteButton
+  );
 }
 
 /**
@@ -172,6 +182,42 @@ export async function handleEditModalSubmit(
 
   await interaction.reply({
     content: "メッセージを編集しました。",
+    ephemeral: true,
+  });
+}
+
+/**
+ * 삭제 버튼 클릭 핸들러
+ */
+export async function handleDeleteButton(
+  interaction: ButtonInteraction
+): Promise<void> {
+  const message = interaction.message;
+
+  // 복사 메시지인지 확인
+  if (!isCopyMessage(message.id)) {
+    await interaction.reply({
+      content: "このメッセージは削除できません。",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  // 원본 작성자인지 확인
+  const authorId = extractAuthorId(message.content);
+  if (authorId !== interaction.user.id) {
+    await interaction.reply({
+      content: "本人が作成したメッセージのみ削除できます。",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  // 메시지 삭제
+  await message.delete();
+
+  await interaction.reply({
+    content: "メッセージを削除しました。",
     ephemeral: true,
   });
 }

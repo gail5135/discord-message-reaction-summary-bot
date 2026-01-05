@@ -19,6 +19,7 @@ import {
   MODAL_ID,
   handleEditButton,
   handleEditModalSubmit,
+  handleDeleteButton,
 } from "./services/interactionService";
 
 const client = new Client({
@@ -92,6 +93,9 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.isButton()) {
     if (interaction.customId === BUTTON_ID.EDIT) {
       await handleEditButton(interaction);
+    }
+    if (interaction.customId === BUTTON_ID.DELETE) {
+      await handleDeleteButton(interaction);
     }
     return;
   }

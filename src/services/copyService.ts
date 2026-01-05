@@ -6,7 +6,7 @@
 import { Client, Message, TextChannel } from "discord.js";
 import { TARGET_CHANNEL_ID } from "../config/env";
 import { addCopyMessage } from "../store/messageMap";
-import { createEditButton } from "./interactionService";
+import { createActionButtons } from "./interactionService";
 
 /**
  * 복사 메시지의 기본 내용 생성
@@ -34,7 +34,7 @@ export async function createCopyMessage(
 
   const copy = await textChannel.send({
     content: baseContent,
-    components: [createEditButton()],
+    components: [createActionButtons()],
   });
   addCopyMessage(copy.id);
 
