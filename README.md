@@ -1,12 +1,14 @@
 # Discord Reaction Summary Bot
 
-`@everyone` 메시지를 **타겟 채널에 복사**하고, **리액션을 요약**해서 표시하는 Discord 봇입니다.
+길드 디스코드에서 공대 모집 시 모집 메시지에 반응한 사람들을 기록하기 위해 만든 봇입니다.
+
+**타겟 채널**의 `@everyone` 태그가 있는 메시지를 **타겟 채널에 복사**하고, **리액션을 요약**해서 표시하는 Discord 봇입니다.
 
 ---
 
 ## ✨ 주요 기능
 
-- ✅ `@everyone`으로 시작하는 메시지만 복사
+- ✅ `@everyone` 태그가 있는 메시지만 복사
 - ✅ 복사 후 원본 메시지 자동 삭제
 - ✅ 리액션을 이모지별로 묶어서 멘션 표시
 - ✅ 커스텀 이모지 및 애니메이션 이모지 지원
@@ -41,7 +43,7 @@
 
 @everyone 모집합니다
 
-----------------------
+ーーーーーーーーーーーーーーーーーーーーー
 👍 : @alice, @bob
 🔥 : @charlie
 
@@ -67,10 +69,10 @@ DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 TARGET_CHANNEL_ID=123456789012345678
 ```
 
-| 변수 | 설명 |
-|------|------|
-| `DISCORD_TOKEN` | Discord Developer Portal에서 발급한 Bot Token |
-| `TARGET_CHANNEL_ID` | 복사 메시지가 작성될 채널 ID |
+| 변수                | 설명                                             |
+| ------------------- | ------------------------------------------------ |
+| `DISCORD_TOKEN`     | Discord Developer Portal에서 발급한 Bot Token    |
+| `TARGET_CHANNEL_ID` | 원본 메시지가 있고, 복사 메시지가 작성될 채널 ID |
 
 ---
 
@@ -79,15 +81,18 @@ TARGET_CHANNEL_ID=123456789012345678
 Discord Developer Portal → OAuth2 → URL Generator에서:
 
 ### Scopes
+
 - ✅ `bot`
 
 ### Bot Permissions
+
 - ✅ `Send Messages`
 - ✅ `Manage Messages` (원본 삭제용)
 - ✅ `Read Message History`
 - ✅ `Add Reactions`
 
 ### Privileged Gateway Intents (Bot 페이지)
+
 - ✅ `MESSAGE CONTENT INTENT`
 
 ---
@@ -126,7 +131,7 @@ src/
 
 ## 📌 주의사항
 
-- `@everyone` 뒤에 내용이 없으면 복사되지 않음
+- `@everyone` 외 아무런 내용이 없는 메시지는 복사되지 않음
 - 편집/삭제는 **원본 작성자 본인만** 가능
 - `data/` 폴더에 메시지 ID가 저장됨 (`.gitignore`에 포함)
 
