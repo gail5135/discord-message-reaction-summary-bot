@@ -47,12 +47,12 @@ client.on("messageCreate", async (message) => {
   // TARGET_CHANNEL_ID 채널의 메시지만 처리
   if (message.channelId !== TARGET_CHANNEL_ID) return;
 
-  // @everyone으로 시작하지 않으면 무시
-  if (!message.content.startsWith("@everyone")) return;
+  // @everyone이 포함되지 않으면 무시
+  if (!message.content.includes("@everyone")) return;
 
-  // @everyone 뒤에 내용이 없으면 무시
-  const contentAfterTag = message.content.slice("@everyone".length).trim();
-  if (!contentAfterTag) return;
+  // @everyone 제외하고 빈 문자열, 공백인 메시지면 무시
+  const contentWithoutTag = message.content.replace(/@everyone/g, "").trim();
+  if (!contentWithoutTag) return;
 
   await createCopyMessage(client, message);
 });
