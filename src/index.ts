@@ -10,7 +10,7 @@
 import "dotenv/config";
 import { Client, GatewayIntentBits, Message, Partials } from "discord.js";
 
-import { DISCORD_TOKEN } from "./config/env";
+import { DISCORD_TOKEN, TARGET_CHANNEL_ID } from "./config/env";
 import { isCopyMessage } from "./store/messageMap";
 import { createCopyMessage } from "./services/copyService";
 import { handleReactionChange } from "./services/reactionService";
@@ -38,11 +38,14 @@ client.once("ready", () => {
 
 /**
  * 새 메시지 생성 이벤트
- * @everyone으로 시작하고 내용이 있는 메시지만 타겟 채널로 복사
+ * TARGET_CHANNEL_ID 채널에서 @everyone으로 시작하는 메시지만 복사
  */
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.content) return;
+
+  // TARGET_CHANNEL_ID 채널의 메시지만 처리
+  if (message.channelId !== TARGET_CHANNEL_ID) return;
 
   // @everyone으로 시작하지 않으면 무시
   if (!message.content.startsWith("@everyone")) return;
