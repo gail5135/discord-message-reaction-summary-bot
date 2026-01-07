@@ -4,9 +4,7 @@
  */
 
 import { Message } from "discord.js";
-
-/** 메시지 내용 구분선 */
-const SEPARATOR = "ーーーーーーーーーーーーーーーーーーーーー";
+import { SEPARATOR } from "../utils/constants";
 
 /**
  * 메시지에서 리액션 정보 수집

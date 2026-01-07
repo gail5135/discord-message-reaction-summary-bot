@@ -14,6 +14,7 @@ import {
   TextInputStyle,
 } from "discord.js";
 import { isCopyMessage } from "../store/messageMap";
+import { SEPARATOR } from "../utils/constants";
 
 /** 버튼/모달 ID 상수 */
 export const BUTTON_ID = {
@@ -25,9 +26,6 @@ export const MODAL_ID = {
   EDIT: "edit_copy_modal",
   CONTENT_INPUT: "new_content_input",
 } as const;
-
-/** 메시지 내용 구분선 */
-const SEPARATOR = "----------------------";
 
 /**
  * 편집/삭제 버튼이 포함된 ActionRow 생성
