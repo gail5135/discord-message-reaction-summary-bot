@@ -34,7 +34,7 @@ export function createActionButtons(): ActionRowBuilder<ButtonBuilder> {
   const editButton = new ButtonBuilder()
     .setCustomId(BUTTON_ID.EDIT)
     .setLabel("編集")
-    .setStyle(ButtonStyle.Secondary)
+    .setStyle(ButtonStyle.Primary)
     .setEmoji("✏️");
 
   const deleteButton = new ButtonBuilder()
