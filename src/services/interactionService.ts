@@ -27,6 +27,12 @@ export const MODAL_ID = {
   CONTENT_INPUT: "new_content_input",
 } as const;
 
+import {
+  extractAuthorId,
+  extractBodyContent,
+  formatMessageBody,
+} from "../utils/messageFormat";
+
 /**
  * 편집/삭제 버튼이 포함된 ActionRow 생성
  */
@@ -47,24 +53,6 @@ export function createActionButtons(): ActionRowBuilder<ButtonBuilder> {
     editButton,
     deleteButton
   );
-}
-
-/**
- * 복사 메시지 내용에서 원본 작성자 ID 추출
- */
-function extractAuthorId(content: string): string | null {
-  const match = content.match(/\*\*From\*\* <@(\d+)>/);
-  return match ? match[1] : null;
-}
-
-/**
- * 복사 메시지 내용에서 본문만 추출 (@everyone 포함)
- */
-function extractBodyContent(content: string): string {
-  const base = content.split(SEPARATOR)[0].trim();
-  const lines = base.split("\n");
-  // 첫 줄 (**From** @유저)과 빈 줄 제거 후 본문 반환
-  return lines.slice(2).join("\n").trim();
 }
 
 /**
@@ -167,16 +155,19 @@ export async function handleEditModalSubmit(
     return;
   }
 
-  // 기존 리액션 정보 유지
+  // 기존 리액션 정보 추출
   const parts = message.content.split(SEPARATOR);
-  const reactionPart =
-    parts.length > 1 ? `\n\n${SEPARATOR}${parts.slice(1).join(SEPARATOR)}` : "";
+  let reactionLines: string[] = [];
+  if (parts.length > 1) {
+    reactionLines = parts[1]
+      .split("\n")
+      .map((line) => line.replace(/\u200b/g, "").trim())
+      .filter((line) => line.length > 0);
+  }
 
   // 메시지 수정
-  const newBase = `**From** <@${authorId}>\n\n${newContent}`;
-  await message.edit({
-    content: newBase + reactionPart,
-  });
+  const final = formatMessageBody(authorId, newContent, reactionLines);
+  await message.edit(final);
 
   await interaction.reply({
     content: "メッセージを編集しました。",

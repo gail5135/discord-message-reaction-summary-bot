@@ -8,13 +8,7 @@ import { TARGET_CHANNEL_ID } from "../config/env";
 import { addCopyMessage } from "../store/messageMap";
 import { createActionButtons } from "./interactionService";
 
-/**
- * 복사 메시지의 기본 내용 생성
- * 형식: **From** @작성자\n\n원본내용
- */
-function buildBaseContent(original: Message): string {
-  return `**From** <@${original.author.id}>\n\n${original.content}`;
-}
+import { formatMessageBody } from "../utils/messageFormat";
 
 /**
  * 원본 메시지를 타겟 채널에 복사하고 원본 삭제
@@ -30,10 +24,10 @@ export async function createCopyMessage(
   }
 
   const textChannel = channel as TextChannel;
-  const baseContent = buildBaseContent(original);
+  const content = formatMessageBody(original.author.id, original.content);
 
   const copy = await textChannel.send({
-    content: baseContent,
+    content,
     components: [createActionButtons()],
   });
   addCopyMessage(copy.id);

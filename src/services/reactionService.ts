@@ -4,6 +4,11 @@
  */
 
 import { Message } from "discord.js";
+import {
+  extractAuthorId,
+  extractBodyContent,
+  formatMessageBody,
+} from "../utils/messageFormat";
 import { SEPARATOR } from "../utils/constants";
 
 /**
@@ -40,6 +45,9 @@ async function collectReactions(
  */
 export async function handleReactionChange(message: Message): Promise<void> {
   const reactions = await collectReactions(message);
+  const authorId = extractAuthorId(message.content);
+
+  if (!authorId) return;
 
   // 리액션 라인 생성
   const lines: string[] = [];
@@ -49,9 +57,8 @@ export async function handleReactionChange(message: Message): Promise<void> {
   }
 
   // 메시지 내용 조합
-  const base = message.content.split(SEPARATOR)[0].trim();
-  const final =
-    lines.length === 0 ? base : `${base}\n\n${SEPARATOR}\n${lines.join("\n")}`;
+  const currentContent = extractBodyContent(message.content);
+  const final = formatMessageBody(authorId, currentContent, lines);
 
   await message.edit(final);
 }
