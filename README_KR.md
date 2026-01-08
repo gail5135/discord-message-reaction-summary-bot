@@ -1,8 +1,9 @@
 # Discord Reaction Summary Bot
 
-길드 디스코드에서 공대 모집 시 모집 메시지에 반응한 사람들을 기록하기 위해 만든 봇입니다.
-
 **타겟 채널**의 `@everyone` 태그가 있는 메시지를 **타겟 채널에 복사**하고, **리액션을 요약**해서 표시하는 Discord 봇입니다.
+
+일본인 길드에서 활동하며 레이드 모집을 돕기 위해 제작된 봇입니다.
+일본인 친구들과 함께 사용할 목적으로 만들었기 때문에 버튼 및 안내 메시지 등은 일본어로 출력됩니다.
 
 ---
 
@@ -123,6 +124,9 @@ src/
 │   └── interactionService.ts # 버튼/모달 처리
 ├── store/
 │   └── messageMap.ts       # 복사 메시지 ID 저장소
+├── utils/
+│   ├── constants.ts        # 상수 정의
+│   └── messageFormat.ts    # 메시지 포맷팅
 └── index.ts                # 진입점
 ```
 

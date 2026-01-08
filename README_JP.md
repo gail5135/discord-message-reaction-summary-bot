@@ -1,7 +1,5 @@
 # Discord Reaction Summary Bot
 
-ギルド（サーバー）の Discord で、レイド募集などの募集メッセージにリアクションしたメンバーを記録・要約表示するために作成された Bot です。
-
 **ターゲットチャンネル**で`@everyone`タグが含まれるメッセージを**ターゲットチャンネルにコピー**し、**そのリアクションを要約**して表示します。
 
 ---
@@ -123,6 +121,9 @@ src/
 │   └── interactionService.ts # ボタン/モーダル処理
 ├── store/
 │   └── messageMap.ts       # メッセージID保存ストア
+├── utils/
+│   ├── constants.ts        # 定数定義
+│   └── messageFormat.ts    # メッセージフォーマット
 └── index.ts                # エントリーポイント
 ```
 
