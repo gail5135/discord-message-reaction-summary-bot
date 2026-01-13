@@ -28,7 +28,7 @@ export async function createCopyMessage(
 
   const copy = await textChannel.send({
     content,
-    components: [createActionButtons()],
+    components: [createActionButtons(original.guild?.preferredLocale)],
   });
   addCopyMessage(copy.id);
 

@@ -15,6 +15,7 @@ import {
 } from "discord.js";
 import { isCopyMessage } from "../store/messageMap";
 import { SEPARATOR } from "../utils/constants";
+import { t } from "../i18n";
 
 /** 버튼/모달 ID 상수 */
 export const BUTTON_ID = {
@@ -36,16 +37,18 @@ import {
 /**
  * 편집/삭제 버튼이 포함된 ActionRow 생성
  */
-export function createActionButtons(): ActionRowBuilder<ButtonBuilder> {
+export function createActionButtons(
+  locale: string = "ja"
+): ActionRowBuilder<ButtonBuilder> {
   const editButton = new ButtonBuilder()
     .setCustomId(BUTTON_ID.EDIT)
-    .setLabel("編集")
+    .setLabel(t("button.edit", locale))
     .setStyle(ButtonStyle.Primary)
     .setEmoji("✏️");
 
   const deleteButton = new ButtonBuilder()
     .setCustomId(BUTTON_ID.DELETE)
-    .setLabel("削除")
+    .setLabel(t("button.delete", locale))
     .setStyle(ButtonStyle.Danger)
     .setEmoji("🗑️");
 
@@ -66,7 +69,7 @@ export async function handleEditButton(
   // 복사 메시지인지 확인
   if (!isCopyMessage(message.id)) {
     await interaction.reply({
-      content: "このメッセージは編集できません。",
+      content: t("error.cannotEdit", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -76,7 +79,7 @@ export async function handleEditButton(
   const authorId = extractAuthorId(message.content);
   if (authorId !== interaction.user.id) {
     await interaction.reply({
-      content: "本人が作成したメッセージのみ編集できます。",
+      content: t("error.onlyAuthorEdit", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -88,13 +91,13 @@ export async function handleEditButton(
   // 모달 생성
   const modal = new ModalBuilder()
     .setCustomId(MODAL_ID.EDIT)
-    .setTitle("メッセージ編集");
+    .setTitle(t("modal.editTitle", interaction.locale));
 
   const input = new TextInputBuilder()
     .setCustomId(MODAL_ID.CONTENT_INPUT)
-    .setLabel("新しい内容")
+    .setLabel(t("modal.newContentLabel", interaction.locale))
     .setStyle(TextInputStyle.Paragraph)
-    .setPlaceholder("編集する内容を入力してください")
+    .setPlaceholder(t("modal.placeholder", interaction.locale))
     .setValue(currentContent)
     .setRequired(true)
     .setMaxLength(2000);
@@ -115,7 +118,7 @@ export async function handleEditModalSubmit(
   const message = interaction.message;
   if (!message) {
     await interaction.reply({
-      content: "メッセージが見つかりません。",
+      content: t("error.messageNotFound", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -125,7 +128,7 @@ export async function handleEditModalSubmit(
   const authorId = extractAuthorId(message.content);
   if (authorId !== interaction.user.id) {
     await interaction.reply({
-      content: "本人が作成したメッセージのみ編集できます。",
+      content: t("error.onlyAuthorEdit", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -139,7 +142,7 @@ export async function handleEditModalSubmit(
   // @everyone으로 시작하는지 확인
   if (!newContent.startsWith("@everyone")) {
     await interaction.reply({
-      content: "内容は @everyone で始まる必要があります。",
+      content: t("error.mustStartWithEveryone", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -149,7 +152,7 @@ export async function handleEditModalSubmit(
   const contentAfterTag = newContent.slice("@everyone".length).trim();
   if (!contentAfterTag) {
     await interaction.reply({
-      content: "@everyone の後に内容を入力してください。",
+      content: t("error.emptyAfterEveryone", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -170,7 +173,7 @@ export async function handleEditModalSubmit(
   await message.edit(final);
 
   await interaction.reply({
-    content: "メッセージを編集しました。",
+    content: t("success.edited", interaction.locale),
     ephemeral: true,
   });
 }
@@ -186,7 +189,7 @@ export async function handleDeleteButton(
   // 복사 메시지인지 확인
   if (!isCopyMessage(message.id)) {
     await interaction.reply({
-      content: "このメッセージは削除できません。",
+      content: t("error.cannotDelete", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -196,7 +199,7 @@ export async function handleDeleteButton(
   const authorId = extractAuthorId(message.content);
   if (authorId !== interaction.user.id) {
     await interaction.reply({
-      content: "本人が作成したメッセージのみ削除できます。",
+      content: t("error.onlyAuthorDelete", interaction.locale),
       ephemeral: true,
     });
     return;
@@ -206,7 +209,7 @@ export async function handleDeleteButton(
   await message.delete();
 
   await interaction.reply({
-    content: "メッセージを削除しました。",
+    content: t("success.deleted", interaction.locale),
     ephemeral: true,
   });
 }
