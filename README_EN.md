@@ -64,12 +64,16 @@ A Discord bot that **copies** messages with `@everyone` tags in the **target cha
 ```env
 DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 TARGET_CHANNEL_ID=123456789012345678
+BOT_LOCALE=en
 ```
 
-| Variable            | Description                                    |
-| ------------------- | ---------------------------------------------- |
-| `DISCORD_TOKEN`     | Bot Token issued from Discord Developer Portal |
-| `TARGET_CHANNEL_ID` | Channel ID for original and copied messages    |
+| Variable            | Description                                    | Required |
+| ------------------- | ---------------------------------------------- | -------- |
+| `DISCORD_TOKEN`     | Bot Token issued from Discord Developer Portal | ✅       |
+| `TARGET_CHANNEL_ID` | Channel ID for original and copied messages    | ✅       |
+| `BOT_LOCALE`        | Button UI language (`en`, `ko`, `ja`)          | ❌       |
+
+> **Note**: If `BOT_LOCALE` is not set, the Discord server's default language setting will be used.
 
 ---
 

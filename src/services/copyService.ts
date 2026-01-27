@@ -26,9 +26,12 @@ export async function createCopyMessage(
   const textChannel = channel as TextChannel;
   const content = formatMessageBody(original.author.id, original.content);
 
+  // 로케일 우선순위: 환경 변수 > Discord 서버 설정
+  const locale = process.env.BOT_LOCALE || original.guild?.preferredLocale?.split("-")[0] || "en";
+
   const copy = await textChannel.send({
     content,
-    components: [createActionButtons(original.guild?.preferredLocale)],
+    components: [createActionButtons(locale)],
   });
   addCopyMessage(copy.id);
 

@@ -64,12 +64,16 @@
 ```env
 DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 TARGET_CHANNEL_ID=123456789012345678
+BOT_LOCALE=ja
 ```
 
-| 変数                | 説明                                                              |
-| ------------------- | ----------------------------------------------------------------- |
-| `DISCORD_TOKEN`     | Discord Developer Portal で発行された Bot Token                   |
-| `TARGET_CHANNEL_ID` | 元メッセージが投稿され、コピーメッセージが作成されるチャンネル ID |
+| 変数                | 説明                                                              | 必須 |
+| ------------------- | ----------------------------------------------------------------- | ---- |
+| `DISCORD_TOKEN`     | Discord Developer Portal で発行された Bot Token                   | ✅   |
+| `TARGET_CHANNEL_ID` | 元メッセージが投稿され、コピーメッセージが作成されるチャンネル ID | ✅   |
+| `BOT_LOCALE`        | ボタン UI の言語設定 (`ja`, `ko`, `en`)                          | ❌   |
+
+> **注意**: `BOT_LOCALE`が設定されていない場合、Discord サーバーのデフォルト言語設定が使用されます。
 
 ---
 

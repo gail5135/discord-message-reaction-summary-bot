@@ -64,12 +64,16 @@
 ```env
 DISCORD_TOKEN=YOUR_DISCORD_BOT_TOKEN
 TARGET_CHANNEL_ID=123456789012345678
+BOT_LOCALE=ko
 ```
 
-| 변수                | 설명                                             |
-| ------------------- | ------------------------------------------------ |
-| `DISCORD_TOKEN`     | Discord Developer Portal에서 발급한 Bot Token    |
-| `TARGET_CHANNEL_ID` | 원본 메시지가 있고, 복사 메시지가 작성될 채널 ID |
+| 변수                | 설명                                             | 필수 |
+| ------------------- | ------------------------------------------------ | ---- |
+| `DISCORD_TOKEN`     | Discord Developer Portal에서 발급한 Bot Token    | ✅   |
+| `TARGET_CHANNEL_ID` | 원본 메시지가 있고, 복사 메시지가 작성될 채널 ID | ✅   |
+| `BOT_LOCALE`        | 버튼 UI 언어 설정 (`ko`, `ja`, `en`)            | ❌   |
+
+> **참고**: `BOT_LOCALE`이 설정되지 않으면 Discord 서버의 기본 언어 설정을 따릅니다.
 
 ---
 
