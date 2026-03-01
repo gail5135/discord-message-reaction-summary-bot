@@ -11,6 +11,7 @@
 - ✅ リアクションを絵文字ごとにまとめてメンション表示
 - ✅ カスタム絵文字、アニメーション絵文字に対応
 - ✅ 編集/削除ボタン（作成者本人のみ操作可能）
+- ✅ カレンダーイベント追加ボタン（サーバー予定イベント登録）
 - ✅ JSON ファイルによるデータの永続化（Bot 再起動時も維持）
 - ✅ 多国語 UI 対応 (日本語、韓国語、英語)
 
@@ -87,10 +88,13 @@ Discord Developer Portal → OAuth2 → URL Generator にて:
 
 ### Bot Permissions
 
+- ✅ `View Channels`
 - ✅ `Send Messages`
 - ✅ `Manage Messages` (元メッセージ削除用)
 - ✅ `Read Message History`
 - ✅ `Add Reactions`
+- ✅ `Use External Emojis`
+- ✅ `Manage Events` (カレンダーイベント登録用)
 
 ### Privileged Gateway Intents (Bot ページ)
 

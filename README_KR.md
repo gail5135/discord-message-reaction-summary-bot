@@ -11,6 +11,7 @@
 - ✅ 리액션을 이모지별로 묶어서 멘션 표시
 - ✅ 커스텀 이모지 및 애니메이션 이모지 지원
 - ✅ 편집/삭제 버튼 (본인만 가능)
+- ✅ 캘린더 일정 추가 버튼 (서버 예약 이벤트 등록)
 - ✅ JSON 파일로 데이터 영속화 (봇 재시작 시에도 유지)
 - ✅ 다국어 UI 지원 (한국어, 일본어, 영어)
 
@@ -87,10 +88,13 @@ Discord Developer Portal → OAuth2 → URL Generator에서:
 
 ### Bot Permissions
 
+- ✅ `View Channels`
 - ✅ `Send Messages`
 - ✅ `Manage Messages` (원본 삭제용)
 - ✅ `Read Message History`
 - ✅ `Add Reactions`
+- ✅ `Use External Emojis`
+- ✅ `Manage Events` (캘린더 일정 등록용)
 
 ### Privileged Gateway Intents (Bot 페이지)
 

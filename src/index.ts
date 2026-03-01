@@ -20,6 +20,10 @@ import {
   handleEditButton,
   handleEditModalSubmit,
   handleDeleteButton,
+  handleDeleteConfirmButton,
+  handleDeleteCancelButton,
+  handleCalendarButton,
+  handleCalendarModalSubmit,
 } from "./services/interactionService";
 
 const client = new Client({
@@ -92,23 +96,34 @@ client.on("messageReactionRemove", async (reaction, user) => {
  * 인터랙션 이벤트 (버튼 클릭, 모달 제출 등)
  */
 client.on("interactionCreate", async (interaction) => {
-  // 버튼 클릭
-  if (interaction.isButton()) {
-    if (interaction.customId === BUTTON_ID.EDIT) {
-      await handleEditButton(interaction);
+  try {
+    // 버튼 클릭
+    if (interaction.isButton()) {
+      if (interaction.customId === BUTTON_ID.EDIT) {
+        await handleEditButton(interaction);
+      } else if (interaction.customId === BUTTON_ID.DELETE) {
+        await handleDeleteButton(interaction);
+      } else if (interaction.customId.startsWith(BUTTON_ID.DELETE_CONFIRM)) {
+        await handleDeleteConfirmButton(interaction);
+      } else if (interaction.customId.startsWith(BUTTON_ID.DELETE_CANCEL)) {
+        await handleDeleteCancelButton(interaction);
+      } else if (interaction.customId === BUTTON_ID.CALENDAR) {
+        await handleCalendarButton(interaction);
+      }
+      return;
     }
-    if (interaction.customId === BUTTON_ID.DELETE) {
-      await handleDeleteButton(interaction);
-    }
-    return;
-  }
 
-  // 모달 제출
-  if (interaction.isModalSubmit()) {
-    if (interaction.customId === MODAL_ID.EDIT) {
-      await handleEditModalSubmit(interaction);
+    // 모달 제출
+    if (interaction.isModalSubmit()) {
+      if (interaction.customId === MODAL_ID.EDIT) {
+        await handleEditModalSubmit(interaction);
+      } else if (interaction.customId === MODAL_ID.CALENDAR) {
+        await handleCalendarModalSubmit(interaction);
+      }
+      return;
     }
-    return;
+  } catch (error) {
+    console.error("Interaction handling error:", error);
   }
 });
 

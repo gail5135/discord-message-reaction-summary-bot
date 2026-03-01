@@ -11,6 +11,7 @@ A Discord bot that **copies** messages with `@everyone` tags in the **target cha
 - ✅ Groups reactions by emoji and displays mentions
 - ✅ Supports custom emojis and animated emojis
 - ✅ Edit/Delete buttons (Only available to the author)
+- ✅ Add calendar event button (Register server scheduled events)
 - ✅ Data persistence via JSON file (Maintained even after bot restart)
 - ✅ Multi-language UI Support (English, Korean, Japanese)
 
@@ -87,10 +88,13 @@ In Discord Developer Portal → OAuth2 → URL Generator:
 
 ### Bot Permissions
 
+- ✅ `View Channels`
 - ✅ `Send Messages`
 - ✅ `Manage Messages` (For deleting originals)
 - ✅ `Read Message History`
 - ✅ `Add Reactions`
+- ✅ `Use External Emojis`
+- ✅ `Manage Events` (For calendar event registration)
 
 ### Privileged Gateway Intents (Bot Page)
 
